@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "budo index.js --open --live --css public/tachyons.css"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "choo": "^7.1.0",
+    "choo-devtools": "^3.0.4",
     "csv-parse": "^4.11.1",
     "d3": "^5.16.0",
     "resl": "^1.0.3"
+  },
+  "devDependencies": {
+    "budo": "^11.6.4"
   }
 }

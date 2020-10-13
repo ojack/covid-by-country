@@ -14,7 +14,7 @@ module.exports = (state, emitter) => {
     graph : {
       width: 0,
       height: 0,
-      margin: { top: 20, bottom: 100, left: 50, right: 40 },
+      margin: { top: 20, bottom: 150, left: 50, right: 40 },
       transform: d3.zoomIdentity  // zoom transform
     },
     panel: { width: 300 }
@@ -64,8 +64,9 @@ module.exports = (state, emitter) => {
       type: state.plotSettings.type.selected
     })
     if(key === 'scale' || key === 'type') {
-      state.layout.graph.transform =  d3.zoomIdentity
-    } 
+  //    state.layout.graph.transform =  d3.zoomIdentity
+      state.animatedGraph.graph.resetZoom()
+    }
     updateScales()
   //  state.canvas.drawPlot()
   //  state.plot = plots.currentPlot

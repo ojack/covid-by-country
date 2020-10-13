@@ -14,6 +14,7 @@ module.exports = class AnimatedGraph extends Component {
     this.state = state
     this.emit = emit
     this.plot = state.plot
+    state.animatedGraph = this
     this.plotSettings = Object.assign({}, state.plotSettings)
   }
 

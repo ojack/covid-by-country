@@ -13,19 +13,24 @@ module.exports = ({ layout, data, plot}, emit) => {
   .scaleExtent([0.25, 32]).on("zoom", zoomed)
   const color = plot.color ? plot.color : d3.scaleOrdinal(countries.map(d => d.continent), d3.schemeSet1).unknown("black")
 
-  // create elements
-  const svg = d3.create("svg")
+  const outer = d3.create("svg")
   .attr("viewBox", [0, 0, width, height])
   .style('width', width)
   .style('height', height)
   .style('overflow', 'visible')
+
+  // create elements
+  const svg = outer.append("svg")
+  .attr("viewBox", [0, 0, width, height])
+  .style('width', width)
+  .style('height', height)
   .on('mouseleave', function() {
     d3.selectAll(".circle").attr("stroke", d => color(d.continent))
     emit('clearTooltip')
   })
 
-  const gx = svg.append("g");
-  const gy = svg.append("g");
+  const gx = outer.append("g");
+  const gy = outer.append("g");
 
   const yAxis = (g, y) => g
   //   .attr("transform", "translate(0,30)")
@@ -33,11 +38,25 @@ module.exports = ({ layout, data, plot}, emit) => {
 
   const xAxis = (g, x) => g
   .attr('class', 'x-axis')
+    .attr('stroke', 'rgba(255, 255, 255, 0.5)')
   .attr("transform", `translate(0,${height})`)
   .call(d3.axisBottom(x).ticks(4, ",.0f"))
 
+
   gy.call(yAxis, plot.zy)
   gx.call(xAxis, plot.zx)
+
+  const xLabel = outer.append('text')
+    .attr("text-anchor", "end")
+    .attr('fill', 'rgba(255, 255, 255, 0.5)')
+    .attr("transform", `translate(${width},${height + 40})`)
+    .text(`${plot.x.label} →`)
+
+    const yLabel = outer.append('text')
+      .attr("text-anchor", "start")
+      .attr('fill', 'rgba(255, 255, 255, 0.5)')
+      .attr("transform", `translate(10,20)`)
+      .text(`↑ ${plot.y.label}`)
 
 
 
@@ -85,7 +104,7 @@ module.exports = ({ layout, data, plot}, emit) => {
   //.attr('fill', d => color(d.continent))
 
   const toggleLabels = (isShowing) => {
-    console.log('updating text', text)
+  //  console.log('updating text', text)
     text.style('display', isShowing? 'block':'none')
     cases.style('display', isShowing? 'block':'none')
     //  text.attr('opacity', 0)
@@ -136,17 +155,32 @@ module.exports = ({ layout, data, plot}, emit) => {
     .style('width', width)
     .style('height', height)
 
+    outer.attr("viewBox", [0, 0, width, height])
+    .style('width', width)
+    .style('height', height)
+
     gy.call(yAxis, plot.zy)
     gx.call(xAxis, plot.zx)
+
+    xLabel.attr("transform", `translate(${width},${height + 40})`)
+      .text(`${plot.x.label} →`)
+
+    yLabel.attr("transform", `translate(10,20)`)
+        .text(`↑ ${plot.y.label}`)
   }
 
-  svg.call(zoom).call(zoom.transform, d3.zoomIdentity)
+  outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+
+  const resetZoom = () => {
+      outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+  }
 
   return {
-    node: svg.node(),
+    node: outer.node(),
     update: update,
     resize: resize,
-    toggleLabels: toggleLabels
+    toggleLabels: toggleLabels,
+    resetZoom: resetZoom
   }
 }
 

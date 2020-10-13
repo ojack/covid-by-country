@@ -60,7 +60,7 @@ module.exports = (state) => {
       logMin: 1
     },
     'dx': {
-      label: 'change in new cases',
+      label: 'change in 7-day incidence from one day to the next',
       value: (d, i) => d['dx'][i]/10,
       domain: [-20, 20]
     },

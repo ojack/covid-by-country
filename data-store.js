@@ -2,13 +2,18 @@ const data = require('./data-processing/covid-cases-processed.json')
 const processData = require('./process-data.js')
 const d3 = require('d3')
 
-const startingTransform = d3.zoomIdentity.scale(2)
+window.d3 = d3
+
+// const startingTransform =  d3.zoomTransform( 4.897345569600865, 0.5584153203977849, -2518.799953362894)
+//const startingTransform = d3.zoomIdentity.translate( -2518.799953362894, 0.5584153203977849).scale( 4.89734556960086)
+const startingTransform = d3.zoomIdentity.translate( 0.5584153203977849, -2518.799953362894).scale( 4.89734556960086)
+//const startingTransform = d3.zoomIdentity.scale(2)
 
 module.exports = (state, emitter) => {
-  console.log('IDENTITY', d3.zoomIdentity)
+  console.log('t', startingTransform)
   state.data = processData(data)
   state.dateIndex = 20
-  state.updateInterval = 200
+  state.updateInterval = 350
   state.isPlaying = true
   state.tooltip = null
   state.layout = {
@@ -37,7 +42,7 @@ module.exports = (state, emitter) => {
       label: 'show labels'
     },
     trajectories: {
-      selected: false,
+      selected: true,
       label: 'show trajectories'
     }
   }

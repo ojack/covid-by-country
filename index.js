@@ -27,7 +27,7 @@ function mainView (state, emit) {
   const width = graph.width + graph.margin.left + graph.margin.right
   const height = graph.height + graph.margin.top + graph.margin.bottom
 
-  const graphContainer = (contents) => html`<div class="absolute top-0 left-0" style="left:${graph.margin.left}px;top:${graph.margin.top}px">
+  const graphContainer = (contents) => html`<div class="absolute top-0 left-0" style="left:${graph.margin.left}px;top:${graph.margin.top}px;cursor:crosshair">
     ${contents}
   </div>`
 
@@ -51,7 +51,7 @@ function mainView (state, emit) {
               <input class="flex-auto" oninput=${(e)=>emit('setDate', parseFloat(e.target.value))} type="range" id="date" name="date" min="0" max=${state.data.dates.length-2} value=${state.dateIndex}>
               <div class="mr2 pa2">${state.data.dates[state.dateIndex]}</div>
             </div>
-            <div class="f4 mv2 pt3"> COVID-19 cases per 100,000 people</div>
+            <div class="f4 mv2 pt3"> COVID-19 cases by country</div>
             <div class="f6 absolute bottom-0 pb2 gray">*Data from <a class="gray dim" href="https://github.com/owid/covid-19-data/tree/master/public/data">Our World In Data </a>, last updated ${state.data.dates[state.data.dates.length-1]} </div>
           </div>
         </div>

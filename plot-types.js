@@ -32,7 +32,7 @@ module.exports = (state) => {
       // max: Math.max(1000, state.data.max['new_cases_smoothed_per_million'])
     },
     '7-day 100' : {
-      label: 'new cases (last 7 days)',
+      label: 'new cases (last 7 days) per 100,000',
       value: (d, i) => d['7_day_incidence_per_million'][i]/10,
       domain: [0, state.data.max['7_day_incidence_per_million']/10],
       // domain: [0, 250],
@@ -54,7 +54,7 @@ module.exports = (state) => {
     },
     'total cases 100': {
       value: (d, i) =>d['total_cases_per_million'][i]/10,
-      label: 'cases since start of epidemic',
+      label: 'cases since start of epidemic per 100,000',
       // domain: [0, 2000],
       domain: [0, state.data.max['total_cases_per_million']/10],
       logMin: 1
@@ -80,7 +80,12 @@ module.exports = (state) => {
     {
       label: '7-day incidence',
       x: 'total cases 100',
-      y: '7-day 100'
+      y: '7-day 100',
+      baseTransform: {
+        k: 4.897345569600865,
+        x: 0.5584153203977849,
+        y: -2518.799953362894
+      }
     },
     {
       label: 'change in incidence',

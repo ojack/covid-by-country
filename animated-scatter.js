@@ -5,7 +5,10 @@ const d3 = require('d3')
 module.exports = ({ layout, data, plot}, emit) => {
   let width= layout.graph.width
   let height = layout.graph.height
-  const startingTransform = d3.zoomIdentity
+  //const startingTransform = d3.zoomIdentity
+  // const startingTransform = d3.zoomIdentity.translate( 0.5584153203977849, -2518.799953362894).scale( 4.89734556960086)
+
+  //)( 4.897345569600865, 0.5584153203977849, -2518.799953362894)
   //.translate(width / 2, height / 2).scale(1.2).translate(-width / 2, -height / 2)
 
   let dataIndex = 20
@@ -174,14 +177,11 @@ module.exports = ({ layout, data, plot}, emit) => {
         .text(`↑ ${plot.y.label}`)
   }
 
-  outer.call(zoom).call(zoom.transform, startingTransform)
+  outer.call(zoom).call(zoom.transform, layout.graph.transform)
 
   const resetZoom = () => {
-      outer.call(zoom).call(zoom.transform, startingTransform)
-  }
-
-  window.testZoom = (scale=1, x=0, y=0, x1=0, y1=0) => {
-    outer.call(zoom).call(zoom.transform, d3.zoomIdentity.translate(x*width, y*height).scale(scale).translate(x1*width, y1*height))
+    //  console.log('setting transform', startingTransform)
+      outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
   }
 
   return {

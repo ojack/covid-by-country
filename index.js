@@ -15,6 +15,11 @@ app.route('/', mainView)
 app.mount('body')
 
 
+const panel = (state, emit) => state.layout.panel.isOpen ? html`<div class="flex flex-column pa4 bl" style="width:${state.layout.panel.width}px;border-color:gray">
+  ${controls(state.plotSettings, emit)}
+</div>` : ''
+
+
 
 //  ${state.cache(Scatterplot, 'scatterplot').render(state)}
 function mainView (state, emit) {
@@ -28,30 +33,31 @@ function mainView (state, emit) {
 
   return html`
   <body class="w-100 h-100 mw-100 avenir bg-dark-gray near-white">
-    <div class="flex flex-row-reverse h-100">
-      <div class="flex-auto pa2">
+    <div class="flex flex-row h-100">
+
+
+      <div class="flex-auto relative">
+
         <div class="relative" style="width:${width}px;height:${height}px">
           ${graphContainer(state.cache(Canvas, 'canvas-base').render({
           dimensions: graph, dateIndex: state.dateIndex, plot: state.plot, tooltip: state.tooltip, plotSettings: state.plotSettings }))}
           ${graphContainer(state.cache(Scatterplot, 'scatterplot').render({
             dimensions: graph, dateIndex: state.dateIndex, plot: state.plot, plotSettings: state.plotSettings }))}
-          <div class="pa2 pb4 flex items-center absolute bottom-0 w-100">
-            <div class="mr2 tc w3 pointer ba dim pa2" onclick=${() => emit('togglePlay')}>${state.isPlaying ? 'Pause': 'Play'}</div>
-            <input class="flex-auto" oninput=${(e)=>emit('setDate', parseFloat(e.target.value))} type="range" id="date" name="date" min="0" max=${state.data.dates.length-3} value=${state.dateIndex}>
-            <div class="mr2 pa2">${state.data.dates[state.dateIndex]}</div>
+            <i class="fas fa-cogs dim absolute top-0 right-0 pointer pa2" title="show settings" onclick=${()=>emit('togglePanel')}></i>
+
+          <div class="absolute bottom-0 w-100 pa4 ml2" style="height:${graph.margin.bottom}px">
+            <div class=" pt4 flex items-center">
+              <div class="mr2 tc w3 pointer ba dim pa2" onclick=${() => emit('togglePlay')}>${state.isPlaying ? 'Pause': 'Play'}</div>
+              <input class="flex-auto" oninput=${(e)=>emit('setDate', parseFloat(e.target.value))} type="range" id="date" name="date" min="0" max=${state.data.dates.length-2} value=${state.dateIndex}>
+              <div class="mr2 pa2">${state.data.dates[state.dateIndex]}</div>
+            </div>
+            <div class="f4 mv2 pt3"> COVID-19 cases per 100,000 people</div>
+            <div class="f6 absolute bottom-0 pb2 gray">*Data from <a class="gray dim" href="https://github.com/owid/covid-19-data/tree/master/public/data">Our World In Data </a>, last updated ${state.data.dates[state.data.dates.length-1]} </div>
           </div>
         </div>
         ${tooltip(state, emit)}
       </div>
-      <div class="flex flex-column pa4 br" style="width:${state.layout.panel.width}px;border-color:gray">
-        <div class="f4 mv1"> COVID-19 cases per 100,000 people</div>
-        ${controls(state.plotSettings, emit)}
-        <!-- <div class="mv1 flex items-center">
-        <div class="mr2 tc w3 pointer ba dim pa2" onclick=${() => emit('togglePlay')}>${state.isPlaying ? 'Pause': 'Play'}</div>
-        <input oninput=${(e)=>emit('setDate', parseFloat(e.target.value))} type="range" id="date" name="date" min="0" max=${state.data.dates.length-3} value=${state.dateIndex}>
-        <div class="mr2 pa2">${state.data.dates[state.dateIndex]}</div>
-        </div> -->
-      </div>
+      ${panel(state, emit)}
     </div>
   </body>
   `

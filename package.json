@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "budo index.js --open --live --css public/tachyons.css",
+    "start": "budo index.js --open --live --dir public",
     "update-data": "node ./data-processing/fetch-latest.js && node ./data-processing/process-data.js"
   },
   "author": "",
@@ -22,6 +22,7 @@
     "resl": "^1.0.3"
   },
   "devDependencies": {
-    "budo": "^11.6.4"
+    "budo": "^11.6.4",
+    "watchify-server": "^1.0.2"
   }
 }

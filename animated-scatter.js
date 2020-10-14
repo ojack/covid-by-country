@@ -1,8 +1,13 @@
 const d3 = require('d3')
 
+
+
 module.exports = ({ layout, data, plot}, emit) => {
   let width= layout.graph.width
   let height = layout.graph.height
+  const startingTransform = d3.zoomIdentity
+  //.translate(width / 2, height / 2).scale(1.2).translate(-width / 2, -height / 2)
+
   let dataIndex = 20
   let animationInterval = 500
   let showLabels = true
@@ -169,10 +174,14 @@ module.exports = ({ layout, data, plot}, emit) => {
         .text(`↑ ${plot.y.label}`)
   }
 
-  outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+  outer.call(zoom).call(zoom.transform, startingTransform)
 
   const resetZoom = () => {
-      outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+      outer.call(zoom).call(zoom.transform, startingTransform)
+  }
+
+  window.testZoom = (scale=1, x=0, y=0, x1=0, y1=0) => {
+    outer.call(zoom).call(zoom.transform, d3.zoomIdentity.translate(x*width, y*height).scale(scale).translate(x1*width, y1*height))
   }
 
   return {

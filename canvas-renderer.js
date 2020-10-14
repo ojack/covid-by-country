@@ -29,7 +29,7 @@ module.exports = class CanvasRenderer extends Component {
      const color = this.plot.color(country.continent)
     //  console.log(color)
       this.ctx.strokeStyle = color
-      this.ctx.globalAlpha = 0.4
+      this.ctx.globalAlpha = 0.2
       plotTrajectory({
         // y: country[this.plot.yKey],
         // x: country[this.plot.xKey],

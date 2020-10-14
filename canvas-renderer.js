@@ -24,6 +24,7 @@ module.exports = class CanvasRenderer extends Component {
     console.log('drawing', draw)
     this.ctx.strokeStyle = `rgba(200, 200, 200, 0.4)`
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.globalCompositeOperation = 'lighter'
     if(draw) {
     this.data.countries.forEach((country) => {
      const color = this.plot.color(country.continent)

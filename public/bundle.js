@@ -2,6 +2,7 @@
 const d3 = require('d3')
 
 
+const labelColor = "rgba(255, 255, 255, 0.6)"
 
 module.exports = ({ layout, data, plot}, emit) => {
   let width= layout.graph.width
@@ -47,7 +48,7 @@ module.exports = ({ layout, data, plot}, emit) => {
 
   const xAxis = (g, x) => g
   .attr('class', 'x-axis')
-    .attr('stroke', 'rgba(255, 255, 255, 0.5)')
+    .attr('stroke', labelColor)
   .attr("transform", `translate(0,${height})`)
   .call(d3.axisBottom(x).ticks(4, ",.0f"))
 
@@ -57,13 +58,13 @@ module.exports = ({ layout, data, plot}, emit) => {
 
   const xLabel = outer.append('text')
     .attr("text-anchor", "end")
-    .attr('fill', 'rgba(255, 255, 255, 0.5)')
+    .attr('fill', labelColor)
     .attr("transform", `translate(${width},${height + 40})`)
     .text(`${plot.x.label} →`)
 
     const yLabel = outer.append('text')
       .attr("text-anchor", "start")
-      .attr('fill', 'rgba(255, 255, 255, 0.5)')
+      .attr('fill', labelColor)
       .attr("transform", `translate(10,20)`)
       .text(`↑ ${plot.y.label}`)
 
@@ -108,8 +109,8 @@ module.exports = ({ layout, data, plot}, emit) => {
   .attr("stroke-width", 1)
 
 
-  const text = circles.append("text").text(d => d.name).attr('x', 10).attr("opacity", 1).attr('fill', 'rgba(255, 255, 255, 0.5)')
-  const cases = circles.append("text").text(d => plot.x.value(d, dataIndex)).attr('x', 10).attr('y', 15).attr('fill', 'rgba(255, 255, 255, 0.5)')
+  const text = circles.append("text").text(d => d.name).attr('x', 10).attr("opacity", 1).attr('fill', labelColor)
+  const cases = circles.append("text").text(d => plot.x.value(d, dataIndex)).attr('x', 10).attr('y', 15).attr('fill', labelColor)
   //.attr('fill', d => color(d.continent))
 
   const toggleLabels = (isShowing) => {
@@ -282,6 +283,7 @@ module.exports = class CanvasRenderer extends Component {
     console.log('drawing', draw)
     this.ctx.strokeStyle = `rgba(200, 200, 200, 0.4)`
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.globalCompositeOperation = 'lighter'
     if(draw) {
     this.data.countries.forEach((country) => {
      const color = this.plot.color(country.continent)
@@ -28331,7 +28333,7 @@ module.exports = (state, emit) => {
     return html`<div class="absolute pa2 ba f6 w5" style="top:40px;left:420px">
       <div class="flex justify-between"><span>${t.name} </span><span class="f7">${state.data.dates[state.dateIndex]}</span></div>
       <div>${Math.round(y.value(t, state.dateIndex)*10)/10} ${y.label}</div>
-      <div>${x.value(t, state.dateIndex)} ${x.label}</div>
+      <div>${Math.round(x.value(t, state.dateIndex)*10)/10} ${x.label}</div>
     </div>`
   } else {
     return ''

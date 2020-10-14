@@ -1,6 +1,7 @@
 const d3 = require('d3')
 
 
+const labelColor = "rgba(255, 255, 255, 0.6)"
 
 module.exports = ({ layout, data, plot}, emit) => {
   let width= layout.graph.width
@@ -46,7 +47,7 @@ module.exports = ({ layout, data, plot}, emit) => {
 
   const xAxis = (g, x) => g
   .attr('class', 'x-axis')
-    .attr('stroke', 'rgba(255, 255, 255, 0.5)')
+    .attr('stroke', labelColor)
   .attr("transform", `translate(0,${height})`)
   .call(d3.axisBottom(x).ticks(4, ",.0f"))
 
@@ -56,13 +57,13 @@ module.exports = ({ layout, data, plot}, emit) => {
 
   const xLabel = outer.append('text')
     .attr("text-anchor", "end")
-    .attr('fill', 'rgba(255, 255, 255, 0.5)')
+    .attr('fill', labelColor)
     .attr("transform", `translate(${width},${height + 40})`)
     .text(`${plot.x.label} →`)
 
     const yLabel = outer.append('text')
       .attr("text-anchor", "start")
-      .attr('fill', 'rgba(255, 255, 255, 0.5)')
+      .attr('fill', labelColor)
       .attr("transform", `translate(10,20)`)
       .text(`↑ ${plot.y.label}`)
 
@@ -107,8 +108,8 @@ module.exports = ({ layout, data, plot}, emit) => {
   .attr("stroke-width", 1)
 
 
-  const text = circles.append("text").text(d => d.name).attr('x', 10).attr("opacity", 1).attr('fill', 'rgba(255, 255, 255, 0.5)')
-  const cases = circles.append("text").text(d => plot.x.value(d, dataIndex)).attr('x', 10).attr('y', 15).attr('fill', 'rgba(255, 255, 255, 0.5)')
+  const text = circles.append("text").text(d => d.name).attr('x', 10).attr("opacity", 1).attr('fill', labelColor)
+  const cases = circles.append("text").text(d => plot.x.value(d, dataIndex)).attr('x', 10).attr('y', 15).attr('fill', labelColor)
   //.attr('fill', d => color(d.continent))
 
   const toggleLabels = (isShowing) => {

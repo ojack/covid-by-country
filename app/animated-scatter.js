@@ -185,6 +185,10 @@ module.exports = ({ layout, data, plot}, emit) => {
       outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
   }
 
+
+  window.testZoom = (k = 1, x0 = 0, y0= 0, x1= 0, y1= 0) => {
+    outer.call(zoom).call(zoom.transform, d3.zoomIdentity.translate(x0*width, y0*height).scale(k).translate(x1*width, y1*height))
+  }
   return {
     node: outer.node(),
     update: update,

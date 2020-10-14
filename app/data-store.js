@@ -1,4 +1,4 @@
-const data = require('./data-processing/covid-cases-processed.json')
+const data = require('./../data-processing/covid-cases-processed.json')
 const processData = require('./process-data.js')
 const d3 = require('d3')
 

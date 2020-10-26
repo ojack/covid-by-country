@@ -5,6 +5,7 @@ module.exports = (data) => {
   const countries = data.countries.filter((d) => d.population > 1000000).filter((d) => d.name !== "World")
       .sort((a, b) => d3.descending(a.population, b.population))
 
+  // change in 7-day incidence per day
   countries.forEach((country, i) => {
   //  d.color = d3.hsl(355*i/countries.length, 0.9, 0.3)
     const dx = []
@@ -17,6 +18,38 @@ module.exports = (data) => {
       }
     })
     country.dx = dx
+  })
+
+  // Percent change in the number of newly confirmed cases per million in past seven days, compared to seven days prior.
+  // change in 7-day incidence per day
+  // calculated similarly to: https://www.who.int/docs/default-source/coronaviruse/situation-reports/20201012-weekly-epi-update-9.pdf
+  countries.forEach((country, i) => {
+  //  d.color = d3.hsl(355*i/countries.length, 0.9, 0.3)
+    const dx2 = []
+    const dx2percent = []
+  //  dx2.push(0)
+    const newCases = country['7_day_incidence_per_million']
+    newCases.forEach((dailyNew, i) => {
+      if(i > 14) {
+        const prevCases = newCases[i-7]
+        if(prevCases === 0) {
+            dx2.push(0)
+            dx2percent.push(0)
+        } else {
+          const change = dailyNew - newCases[i-7]
+          //const percentChange = change/Math.abs(newCases[i-7])
+          const percentChange = change/Math.abs(newCases[i-7])
+          dx2.push(change)
+          dx2percent.push(percentChange)
+        //  console.log(dailyNew, newCases[i-7], percentChange)
+        }
+      } else {
+        dx2.push(0)
+        dx2percent.push(0)
+      }
+    })
+    country.dx2 = dx2
+    country.dx2percent = dx2percent
   })
 
   console.log('COUNTRIES', countries)

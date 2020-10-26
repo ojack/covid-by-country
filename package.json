@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "budo index.js:bundle.js --open --live --dir public",
+    "start": "http-server ./public",
+    "dev": "budo index.js:bundle.js --open --live --dir public",
     "build": "browserify index.js -o public/bundle.js",
     "update-data": "node ./data-processing/fetch-latest.js && node ./data-processing/process-data.js"
   },
@@ -18,7 +19,8 @@
     "csv-parse": "^4.12.0",
     "d3": "^5.16.0",
     "insert-css": "^2.0.0",
-    "resl": "^1.0.3"
+    "resl": "^1.0.3",
+    "http-server": "^0.12.3"
   },
   "devDependencies": {
     "budo": "^11.6.4"

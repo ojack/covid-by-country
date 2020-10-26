@@ -61,13 +61,13 @@ module.exports = (state) => {
     },
     'dx': {
       label: 'change in 7-day incidence',
-      value: (d, i) => d['dx'][i]/10,
+      value: (d, i) => d['dx2'][i]/10,
       domain: [-20, 20]
     },
     'percent change': {
       label: 'percent change in cases',
-      value: (d, i) => d['dx'][i]/d['new_cases_smoothed_per_million'][i],
-      domain: [-0.4, 0.4]
+      value: (d, i) => d['dx2percent'][i],
+      domain: [-1, 1]
     }
   }
 
@@ -92,11 +92,11 @@ module.exports = (state) => {
       x: '7-day 100',
       y: 'dx'
     },
-    // {
-    //   label: 'change in incidence (%)',
-    //   x: '7-day 100',
-    //   y: 'percent change'
-    // }
+    {
+      label: 'change in incidence (%)',
+      x: '7-day 100',
+      y: 'percent change'
+    }
   ]
 
   const getAxis = ({ log = false, data, range}) => {

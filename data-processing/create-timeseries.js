@@ -1,3 +1,6 @@
+const precision = 6
+
+
 module.exports = (data, _dates) => {
   const dates = _dates.sort()
   console.log(dates)
@@ -39,7 +42,7 @@ module.exports = (data, _dates) => {
             const inc = (nextValue - prevValue) / (nextIndex - prevIndex)
             const newVal = parseFloat(prevValue) + inc * (i - prevIndex)
         //    console.log(newVal, prevValue, prevIndex, i)
-            series[i] = parseFloat(newVal.toFixed(3))
+            series[i] = parseFloat(newVal.toFixed(precision))
           }
         }
       } else {
@@ -60,7 +63,7 @@ module.exports = (data, _dates) => {
         const arr = a.slice(i - h, i + h + 1)
         const avg = arr.reduce((p, c) => p + c, 0) / arr.length
       //  console.log(arr, avg)
-        return parseFloat(avg.toFixed(3))
+        return parseFloat(avg.toFixed(precision))
       }
       return null
     })
@@ -74,7 +77,7 @@ module.exports = (data, _dates) => {
         const sum = arr.reduce((p, c) => p + c, 0)
         // arr.length
       //  console.log(arr, avg)
-        return parseFloat(sum.toFixed(3))
+        return parseFloat(sum.toFixed(precision))
       }
       return null
     })

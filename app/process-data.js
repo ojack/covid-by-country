@@ -55,28 +55,61 @@ module.exports = (data) => {
   console.log('COUNTRIES', countries)
 
   // calculate daily and overall maximum
-  const max = {
-    'total_cases': 0,
-    'new_cases_smoothed_per_million': 0,
-    'total_cases_per_million': 0,
-    '7_day_incidence_per_million': 0
-  }
-  const dailyMax = data.dates.map((date, dateIndex) => {
-    const dailyMax = {}
-    Object.keys(max).forEach((key) => { dailyMax[key] = 0})
-    Object.values(countries).forEach((country) => {
-      Object.keys(max).forEach((key) => {
-        if(country[key][dateIndex] > dailyMax[key]){
-          dailyMax[key] = country[key][dateIndex]
-          if(country[key][dateIndex] > max[key]){
-            max[key] = country[key][dateIndex]
-          //  console.log(country.name, key, country[key][dateIndex], dateIndex)
-          }
-        }
-      })
-    })
-    return dailyMax
+  const keys = ['total_cases', 'new_cases_smoothed_per_million', 'total_cases_per_million', '7_day_incidence_per_million', 'dx2', 'dx2percent']
+  const extent = {}
+
+  keys.forEach((key) => {
+    extent[key] = [1000, 0] // default 'min' and 'max' values to compare ro
   })
+
+  //const dailyExtentObj = data.dates.map((date, dateIndex) => {
+    const dailyExtentObj = {}
+    Object.keys(extent).forEach((key) => {
+      const extentByDay = data.dates.map((date, dateIndex) => {
+        const dailyExtent = [1000, 0]
+        Object.values(countries).forEach((country) => {
+          if(country[key][dateIndex] > dailyExtent[1]){
+            // update daily max
+            dailyExtent[1] = country[key][dateIndex]
+            if(country[key][dateIndex] > extent[key][1]){
+              extent[key][1] = country[key][dateIndex]
+            }
+          }
+          if(country[key][dateIndex] < dailyExtent[0]){
+            // update daily min
+            dailyExtent[0] = country[key][dateIndex]
+            if(country[key][dateIndex] < extent[key][0]){
+              extent[key][0] = country[key][dateIndex]
+            }
+          }
+        })
+        return dailyExtent
+      })
+      dailyExtentObj[key] = extentByDay
+    })
+
+
+    // Object.values(countries).forEach((country) => {
+    //   Object.keys(extent).forEach((key) => {
+    //     // if max is greater than this mac
+    //     if(country[key][dateIndex] > dailyExtent[1]){
+    //       // update daily max
+    //       dailyExtent[key][1] = country[key][dateIndex]
+    //       if(country[key][dateIndex] > extent[key][1]){
+    //         extent[key][1] = country[key][dateIndex]
+    //       }
+    //     }
+    //     if(country[key][dateIndex] < dailyExtent[key][0]){
+    //       // update daily min
+    //       dailyExtent[key][0] = country[key][dateIndex]
+    //       if(country[key][dateIndex] < extent[key][0]){
+    //         extent[key][0] = country[key][dateIndex]
+    //       }
+    //     }
+    //   })
+    // })
+  //  return dailyExtent
+//  })
 
   let minRange = {'new_cases_smoothed_per_million': 10,    'total_cases_per_million': 6}
 
@@ -84,24 +117,25 @@ module.exports = (data) => {
   // let dx = minRange['new_cases_smoothed_per_million']
   // let y = minRange[ 'total_cases_per_million']
   // filter max values so that there is a minimum value, and the axes are always increasing
-  const maxPerDay = dailyMax.map((daily) => {
-    const newDaily = daily
-    if(daily['new_cases_smoothed_per_million'] < minRange['new_cases_smoothed_per_million']) {
-      newDaily['new_cases_smoothed_per_million'] = minRange['new_cases_smoothed_per_million']
-    }
-    if(daily['total_cases_per_million'] < minRange['total_cases_per_million']) {
-      newDaily['total_cases_per_million'] = minRange['total_cases_per_million']
-    }
-    minRange = Object.assign({}, newDaily)
-//    if(newDaily['new_cases_smoothed_per_million'] > MAX_Y) newDaily['new_cases_smoothed_per_million'] = MAX_Y
-    return newDaily
-  })
+//   const maxPerDay = dailyMax.map((daily) => {
+//     const newDaily = daily
+//     if(daily['new_cases_smoothed_per_million'] < minRange['new_cases_smoothed_per_million']) {
+//       newDaily['new_cases_smoothed_per_million'] = minRange['new_cases_smoothed_per_million']
+//     }
+//     if(daily['total_cases_per_million'] < minRange['total_cases_per_million']) {
+//       newDaily['total_cases_per_million'] = minRange['total_cases_per_million']
+//     }
+//     minRange = Object.assign({}, newDaily)
+// //    if(newDaily['new_cases_smoothed_per_million'] > MAX_Y) newDaily['new_cases_smoothed_per_million'] = MAX_Y
+//     return newDaily
+//   })
+ console.log(dailyExtentObj)
 
   return {
     countries: countries,
-    maxPerDay: maxPerDay,
+    dailyExtent: dailyExtentObj,
     dates: data.dates,
-    max: max
+    extent: extent
   }
 
 }

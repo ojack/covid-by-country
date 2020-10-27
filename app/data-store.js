@@ -14,8 +14,9 @@ const scaleFromBottomLeft = (scaleAmount, height) => {
 }
 
 
+
 module.exports = (state, emitter) => {
-  console.log('t', startingTransform)
+//  console.log('t', startingTransform)
   state.data = processData(data)
   state.dateIndex = 20
   state.updateInterval = 350
@@ -34,7 +35,13 @@ module.exports = (state, emitter) => {
   resize(false)
 
 
-  state.layout.graph.transform = scaleFromBottomLeft(4.5, state.layout.graph.height)
+  state.layout.graph.transform = {
+    x: scaleFromBottomLeft(4.5, state.layout.graph.height),
+    y: scaleFromBottomLeft(4.5, state.layout.graph.height)
+  }
+
+  console.log(state.layout.graph.transform)
+//  state.layout.graph.transform = scaleToDomain(0, 600, state.layout.graph.width)
   const plots = require('./plot-types.js')(state)
 
   state.plot = plots.currentPlot
@@ -55,6 +62,10 @@ module.exports = (state, emitter) => {
     trajectories: {
       selected: true,
       label: 'show trajectories'
+    },
+    autoZoom: {
+      selected: true,
+      label: 'auto zoom'
     }
   }
 
@@ -116,7 +127,8 @@ module.exports = (state, emitter) => {
   })
 
   emitter.on('update zoom', (transform) => {
-    state.layout.graph.transform = transform
+    state.layout.graph.transform.x = transform
+    state.layout.graph.transform.y = transform
     updateScales()
     emitter.emit('render')
   })
@@ -135,10 +147,11 @@ module.exports = (state, emitter) => {
   }
 
   function updateScales () {
-    const transform = state.layout.graph.transform
+    const transformX = state.layout.graph.transform.x
+    const transformY = state.layout.graph.transform.y
     const plot = state.plot
-    plot.zx = transform.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
-    plot.zy = transform.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
+    plot.zx = transformX.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
+    plot.zy = transformY.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
   }
 
   function stopPlaying() {
@@ -159,7 +172,47 @@ module.exports = (state, emitter) => {
       stopPlaying()
       // stop playing
     }
+  //  updateExtent()
     emitter.emit('render')
+  }
+
+  const scaleToDomain = (x0, x1,y0, y1, width, height) => {
+    const yScale = height/(y0 - y1)
+    console.log(y0, y1, yScale, height)
+
+    const xScale = height/(x1 - x0)
+    console.log('x', x0, x1, xScale)
+    // return d3.zoomIdentity
+    //          .scale(width / (x1 - x0), 0.5)
+    //          .translate(-x0, 0)
+    return d3.zoomIdentity.translate(0, -height*(1 - 1)).scale(2, 1)
+// !! problem: zoom only has onw k value, to do: https://observablehq.com/@d3/x-y-zoom
+  //  return d3.zoomIdentity.translate(0, -height*(yScale - 1)).scale(yScale, yScale)
+  }
+
+  // const scaleFromBottomLeft = (scaleAmount, height) => {
+  //   return d3.zoomIdentity.translate(0, -height*(scaleAmount - 1)).scale(scaleAmount)
+  // }
+
+  function updateExtent() {
+    console.log(state.plot)
+    const x = state.plot.x.dailyExtent[state.dateIndex]
+    const y = state.plot.y.dailyExtent[state.dateIndex]
+//   const xRange = [state.plot.zx(x[0]), state.plot.zx(x[1])]
+    // const xMin = state.plot.zx(x[0])
+    // const xMax =  state.plot.zx(x[1])
+    console.log(x, y, state.plot.x.scale()(x[1]), state.plot.y.scale()(y[1]) )
+   state.layout.graph.transform = scaleToDomain(
+     x[0],
+     state.plot.x.scale()(x[1]/10),
+     state.plot.y.scale()(y[0]/10),
+     state.plot.y.scale()(y[1]/10),
+     state.layout.graph.width,
+     state.layout.graph.height
+   )
+   updateScales()
+   state.animatedGraph.graph.setZoom(state.layout.graph.transform)
+//  console.log(x, xRange)
   }
 
   emitter.on('setDate', (dateIndex) => {

@@ -178,11 +178,15 @@ module.exports = ({ layout, data, plot}, emit) => {
         .text(`↑ ${plot.y.label}`)
   }
 
-  outer.call(zoom).call(zoom.transform, layout.graph.transform)
+  outer.call(zoom).call(zoom.transform, layout.graph.transform.x)
 
   const resetZoom = () => {
     //  console.log('setting transform', startingTransform)
       outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+  }
+
+  const setZoom = (transform = d3.zoomIdentity) => {
+    outer.call(zoom).call(zoom.transform, transform)
   }
 
 
@@ -194,7 +198,8 @@ module.exports = ({ layout, data, plot}, emit) => {
     update: update,
     resize: resize,
     toggleLabels: toggleLabels,
-    resetZoom: resetZoom
+    resetZoom: resetZoom,
+    setZoom: setZoom
   }
 }
 

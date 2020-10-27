@@ -16,10 +16,10 @@ const scaleFromBottomLeft = (scaleAmount, height) => {
 
 
 module.exports = (state, emitter) => {
-//  console.log('t', startingTransform)
+  //  console.log('t', startingTransform)
   state.data = processData(data)
-  state.dateIndex = 20
-  state.updateInterval = 350
+  state.dateIndex = 100
+  state.updateInterval = 200
   state.isPlaying = true
   state.tooltip = null
   state.layout = {
@@ -27,7 +27,7 @@ module.exports = (state, emitter) => {
       width: 0,
       height: 0,
       margin: { top: 40, bottom: 200, left: 50, right: 40 },
-    //  transform: scaleFromBottomLeft(4, state.layout.graph.height)
+      //  transform: scaleFromBottomLeft(4, state.layout.graph.height)
     },
     panel: { width: 300, isOpen: false }
   }
@@ -35,13 +35,11 @@ module.exports = (state, emitter) => {
   resize(false)
 
 
-  state.layout.graph.transform = {
-    x: scaleFromBottomLeft(4.5, state.layout.graph.height),
-    y: scaleFromBottomLeft(4.5, state.layout.graph.height)
-  }
+  state.layout.graph.transformX = scaleFromBottomLeft(4.5, state.layout.graph.height)
+  state.layout.graph.transformY = scaleFromBottomLeft(4.5, state.layout.graph.height)
 
   console.log(state.layout.graph.transform)
-//  state.layout.graph.transform = scaleToDomain(0, 600, state.layout.graph.width)
+  //  state.layout.graph.transform = scaleToDomain(0, 600, state.layout.graph.width)
   const plots = require('./plot-types.js')(state)
 
   state.plot = plots.currentPlot
@@ -64,7 +62,7 @@ module.exports = (state, emitter) => {
       label: 'show trajectories'
     },
     autoZoom: {
-      selected: true,
+      selected: false,
       label: 'auto zoom'
     }
   }
@@ -77,7 +75,7 @@ module.exports = (state, emitter) => {
   // state.margin =
 
   const color = d3.scaleOrdinal(state.data.countries.map(d => d.continent), d3.schemeSet1).unknown("black")
-//  console.log(data)
+  //  console.log(data)
   state.selected = null
 
 
@@ -91,12 +89,12 @@ module.exports = (state, emitter) => {
       type: state.plotSettings.type.selected
     })
     if(key === 'scale' || key === 'type') {
-  //    state.layout.graph.transform =  d3.zoomIdentity
+      //    state.layout.graph.transform =  d3.zoomIdentity
       state.animatedGraph.graph.resetZoom()
     }
     updateScales()
-  //  state.canvas.drawPlot()
-  //  state.plot = plots.currentPlot
+    //  state.canvas.drawPlot()
+    //  state.plot = plots.currentPlot
     emitter.emit('render')
   })
 
@@ -126,9 +124,48 @@ module.exports = (state, emitter) => {
     emitter.emit('render')
   })
 
-  emitter.on('update zoom', (transform) => {
-    state.layout.graph.transform.x = transform
-    state.layout.graph.transform.y = transform
+  let z = d3.zoomIdentity;
+
+  emitter.on('update zoom on touch', (e) => {
+    console.log(e)
+    const t = e.transform;
+    const k = t.k / z.k;
+
+    let tx = state.layout.graph.transformX
+    let ty = state.layout.graph.transformY
+
+    //  const point = e.sourceEvent ? d3.pointer(e) : [width / 2, height / 2];
+    const shift = e.sourceEvent && e.sourceEvent.shiftKey;
+
+    const point = [ 0, state.layout.graph.height]
+    console.log(tx, (t.x - z.x))
+    if (k === 1) {
+      // pure translation?
+      //  state.layout.graph.transformX =
+      tx = tx.translate((t.x - z.x)/tx.k, 0)
+      ty = ty.translate(0, (t.y - z.y) / ty.k)
+      // tx.translate((t.x - z.x) / tx.k, 0)
+      //  ty.translate(0, (t.y - z.y) / ty.k)
+      // doX && gx.call(zoomX.translateBy, (t.x - z.x) / tx().k, 0);
+      // doY && gy.call(zoomY.translateBy, 0, (t.y - z.y) / ty().k);
+    } else {
+      tx = tx.scale(shift ? 1/k : k)
+      //  ty = ty.scale(k)
+      ty = ty.translate(0, - state.layout.graph.height*(k-1)).scale(k)
+      //(k)(t.y - z.y) / ty.k)
+      // if not, we're zooming on a fixed point
+      // doX && gx.call(zoomX.scaleBy, shift ? 1 / k : k, point);
+      // doY && gy.call(zoomY.scaleBy, k, point);
+    }
+
+    // const scaleFromBottomLeft = (scaleAmount, height) => {
+    //   return d3.zoomIdentity.translate(0, -height*(scaleAmount - 1)).scale(scaleAmount)
+    // }
+    console.log(state.layout.graph.transformX)
+    state.layout.graph.transformX = tx
+    state.layout.graph.transformY = ty
+
+    z = t
     updateScales()
     emitter.emit('render')
   })
@@ -147,8 +184,8 @@ module.exports = (state, emitter) => {
   }
 
   function updateScales () {
-    const transformX = state.layout.graph.transform.x
-    const transformY = state.layout.graph.transform.y
+    const transformX = state.layout.graph.transformX
+    const transformY = state.layout.graph.transformY
     const plot = state.plot
     plot.zx = transformX.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
     plot.zy = transformY.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
@@ -172,7 +209,7 @@ module.exports = (state, emitter) => {
       stopPlaying()
       // stop playing
     }
-  //  updateExtent()
+    if(state.plotSettings.autoZoom.selected === true) updateExtent()
     emitter.emit('render')
   }
 
@@ -185,9 +222,12 @@ module.exports = (state, emitter) => {
     // return d3.zoomIdentity
     //          .scale(width / (x1 - x0), 0.5)
     //          .translate(-x0, 0)
-    return d3.zoomIdentity.translate(0, -height*(1 - 1)).scale(2, 1)
-// !! problem: zoom only has onw k value, to do: https://observablehq.com/@d3/x-y-zoom
-  //  return d3.zoomIdentity.translate(0, -height*(yScale - 1)).scale(yScale, yScale)
+    return {
+      x: d3.zoomIdentity.translate(0, 0).scale(xScale),
+      y: d3.zoomIdentity.translate(0, -height*(yScale - 1)).scale(yScale)
+    }
+    // !! problem: zoom only has onw k value, to do: https://observablehq.com/@d3/x-y-zoom
+    //  return d3.zoomIdentity.translate(0, -height*(yScale - 1)).scale(yScale, yScale)
   }
 
   // const scaleFromBottomLeft = (scaleAmount, height) => {
@@ -198,21 +238,24 @@ module.exports = (state, emitter) => {
     console.log(state.plot)
     const x = state.plot.x.dailyExtent[state.dateIndex]
     const y = state.plot.y.dailyExtent[state.dateIndex]
-//   const xRange = [state.plot.zx(x[0]), state.plot.zx(x[1])]
+    //   const xRange = [state.plot.zx(x[0]), state.plot.zx(x[1])]
     // const xMin = state.plot.zx(x[0])
     // const xMax =  state.plot.zx(x[1])
     console.log(x, y, state.plot.x.scale()(x[1]), state.plot.y.scale()(y[1]) )
-   state.layout.graph.transform = scaleToDomain(
-     x[0],
-     state.plot.x.scale()(x[1]/10),
-     state.plot.y.scale()(y[0]/10),
-     state.plot.y.scale()(y[1]/10),
-     state.layout.graph.width,
-     state.layout.graph.height
-   )
-   updateScales()
-   state.animatedGraph.graph.setZoom(state.layout.graph.transform)
-//  console.log(x, xRange)
+    const getTransforms  = scaleToDomain(
+      x[0],
+      state.plot.x.scale()(x[1]/10),
+      state.plot.y.scale()(y[0]/10),
+      state.plot.y.scale()(y[1]/10),
+      state.layout.graph.width,
+      state.layout.graph.height
+    )
+    state.layout.graph.transformX = getTransforms.x
+    state.layout.graph.transformY = getTransforms.y
+
+    updateScales()
+    state.animatedGraph.graph.setZoom(state.layout.graph.transform)
+    //  console.log(x, xRange)
   }
 
   emitter.on('setDate', (dateIndex) => {

@@ -128,8 +128,8 @@ module.exports = (state) => {
   //  console.log('setting plot', index, plot, log, plotTypes)
     plot.x = getAxis({ data: dataSets[plot.x], range: xRange, log: log })
     plot.y = getAxis({ data: dataSets[plot.y], range: yRange, log: log})
-    plot.zx = state.layout.graph.transform.x.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
-    plot.zy = state.layout.graph.transform.y.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
+    plot.zx = state.layout.graph.transformX.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
+    plot.zy = state.layout.graph.transformY.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
     plot.color = color
     console.log(' got plot', plot)
     currentPlot = plot

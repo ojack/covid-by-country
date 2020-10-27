@@ -18,8 +18,15 @@ module.exports = ({ layout, data, plot}, emit) => {
 
   const countries = data.countries
 
-  const zoom = d3.zoom()
-  .scaleExtent([0.25, 32]).on("zoom", zoomed)
+  // create separate zoom for x and y in order to have independent scaling: https://observablehq.com/@d3/x-y-zoom
+  const zoomX = d3.zoom()
+  .scaleExtent([0.25, 32])
+
+  const zoomY = d3.zoom()
+  .scaleExtent([0.25, 32])
+
+  const zoom = d3.zoom().on("zoom", zoomed)
+  //.on("zoom", zoomed)
   const color = plot.color ? plot.color : d3.scaleOrdinal(countries.map(d => d.continent), d3.schemeSet1).unknown("black")
 
   const outer = d3.create("svg")
@@ -151,7 +158,12 @@ module.exports = ({ layout, data, plot}, emit) => {
   }
 
   function zoomed() {
-    emit('update zoom', d3.event.transform)
+  //  console.log(d3.event)
+    emit('update zoom on touch', d3.event)
+    setZoomParameters()
+  }
+
+  function setZoomParameters() {
     gx.call(xAxis, plot.zx);
     gy.call(yAxis, plot.zy);
     update(dataIndex, animationInterval, plot)
@@ -178,15 +190,26 @@ module.exports = ({ layout, data, plot}, emit) => {
         .text(`↑ ${plot.y.label}`)
   }
 
-  outer.call(zoom).call(zoom.transform, layout.graph.transform.x)
+  // gx.call(zoomX).call(zoomX.transform, layout.graph.transform.x).attr("pointer-events", "none")
+  // gy.call(zoomY).call(zoomY.transform, layout.graph.transform.y).attr("pointer-events", "none")
+
+  outer.call(zoom)
+  //.call(zoom.transform, layout.graph.transform.x)
+setZoomParameters()
 
   const resetZoom = () => {
-    //  console.log('setting transform', startingTransform)
-      outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+    setZoom()
+  //   //  console.log('setting transform', startingTransform)
+  // //    outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+  //     outer.call(zoomX).call(zoomX.transform, layout.graph.transform.x)
+  //     outer.call(zoomY).call(zoomY.transform, layout.graph.transform.y)
   }
 
-  const setZoom = (transform = d3.zoomIdentity) => {
-    outer.call(zoom).call(zoom.transform, transform)
+  const setZoom = (transformX = d3.zoomIdentity, transformY = d3.zoomIdentity) => {
+    // outer.call(zoomX).call(zoomX.transform, transformX)
+    // outer.call(zoomY).call(zoomY.transform, transformY)
+  //  outer.call(zoom).call(zoom.transform, layout.graph.transform.x)
+    setZoomParameters()
   }
 
 

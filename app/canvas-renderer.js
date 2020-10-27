@@ -59,10 +59,11 @@ module.exports = class CanvasRenderer extends Component {
   update({ dimensions, tooltip, plot, plotSettings}) {
 //    this.plot = plot
   //  console.log(plot.zx)
+//  console.log(dimensions.transform.x)
     if(dimensions.width !== this.dimensions.width ||
       dimensions.height !== this.dimensions.height ||
       this.tooltip !== tooltip || this.plot !== plot
-    || dimensions.transform !== this.dimensions.transform || this.plotSettings.trajectories.selected !== plotSettings.trajectories.selected
+    || dimensions.transformX !== this.dimensions.transformX || this.plotSettings.trajectories.selected !== plotSettings.trajectories.selected
   ) {
       console.log('resizing canvas')
       this.canvas.width = dimensions.width

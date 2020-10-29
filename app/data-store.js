@@ -35,14 +35,28 @@ module.exports = (state, emitter) => {
   resize(false)
 
 
-  state.layout.graph.transformX = scaleFromBottomLeft(4.5, state.layout.graph.height)
-  state.layout.graph.transformY = scaleFromBottomLeft(4.5, state.layout.graph.height)
+  // state.layout.graph.transformX = scaleFromBottomLeft(4.5, state.layout.graph.height)
+  // state.layout.graph.transformY = scaleFromBottomLeft(4.5, state.layout.graph.height)
+
+
+  const zx = d3.zoom()
+  const zy = d3.zoom()
+
+  // dummy elements to store zoom because current transform not stored in zoom but on element
+  const _gx = d3.create("g")
+  const _gy = d3.create("g")
+  _gx.call(zx)
+  _gy.call(zy)
+  // get current transform
+  const _tx = () => d3.zoomTransform(_gx.node())
+  const _ty = () => d3.zoomTransform(_gy.node())
 
   console.log(state.layout.graph.transform)
   //  state.layout.graph.transform = scaleToDomain(0, 600, state.layout.graph.width)
   const plots = require('./plot-types.js')(state)
 
   state.plot = plots.currentPlot
+  updateScales()
 
   state.plotSettings = {
     scale: {
@@ -137,24 +151,32 @@ module.exports = (state, emitter) => {
   })
 
   emitter.on('update zoom on touch', (e) => {
-    console.log(e)
+    console.log(e.sourceEvent)
     const t = e.transform;
     const k = t.k / z.k;
 
-    let tx = state.layout.graph.transformX
-    let ty = state.layout.graph.transformY
+    // let tx = state.layout.graph.transformX
+    // let ty = state.layout.graph.transformY
     //  const point = e.sourceEvent ? d3.pointer(e) : [width / 2, height / 2];
     const shift = e.sourceEvent && e.sourceEvent.shiftKey;
-    const point = [ 0, state.layout.graph.height]
+    const point =  e.sourceEvent ? [e.sourceEvent.offsetX, e.sourceEvent.offsetY] : [ 0, state.layout.graph.height]
     if (k === 1) {
-      tx = tx.translate((t.x - z.x)/tx.k, 0)
-      ty = ty.translate(0, (t.y - z.y) / ty.k)
+      // tx = tx.translate((t.x - z.x)/tx.k, 0)
+      // ty = ty.translate(0, (t.y - z.y) / ty.k)
+
+      // testing zoom
+      _gx.call(zx.translateBy, (t.x - z.x)/_tx().k, 0)
+      _gy.call(zy.translateBy, 0, (t.y - z.y) / _ty().k)
     } else {
-      tx = tx.scale(shift ? 1/k : k)
-      ty = ty.translate(0, - state.layout.graph.height*(k-1)).scale(k)
+      // tx = tx.scale(shift ? 1/k : k)
+      // ty = ty.translate(0, - state.layout.graph.height*(k-1)).scale(k)
+
+      // testing zoom
+      _gx.call(zx.scaleBy, shift ? 1 / k : k, point)
+      _gy.call(zy.scaleBy, k, point)
     }
-    state.layout.graph.transformX = tx
-    state.layout.graph.transformY = ty
+    // state.layout.graph.transformX = tx
+    // state.layout.graph.transformY = ty
     z = t
     updateScales()
     emitter.emit('render')
@@ -177,8 +199,11 @@ module.exports = (state, emitter) => {
     const transformX = state.layout.graph.transformX
     const transformY = state.layout.graph.transformY
     const plot = state.plot
-    plot.zx = transformX.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
-    plot.zy = transformY.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
+    plot.zx = _tx().rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
+    plot.zy = _ty().rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
+    if(state.canvas) state.canvas.drawPlot(state.plotSettings.trajectories.selected)
+    // plot.zx = transformX.rescaleX(plot.x.scale()).interpolate(d3.interpolateRound)
+    // plot.zy = transformY.rescaleY(plot.y.scale()).interpolate(d3.interpolateRound)
   }
 
   function stopPlaying() {
@@ -236,7 +261,7 @@ module.exports = (state, emitter) => {
     //   const xRange = [state.plot.zx(x[0]), state.plot.zx(x[1])]
     // const xMin = state.plot.zx(x[0])
     // const xMax =  state.plot.zx(x[1])
-    console.log(x, y, state.plot.x.scale()(x[1]), state.plot.y.scale()(y[1]) )
+  //  console.log(x, y, state.plot.x.scale()(x[1]), state.plot.y.scale()(y[1]) )
     const getTransforms  = scaleToDomain(
       state.plot.x.scale()(x[0]),
       state.plot.x.scale()(x[1]),
@@ -245,11 +270,12 @@ module.exports = (state, emitter) => {
       state.layout.graph.width,
       state.layout.graph.height
     )
-    state.layout.graph.transformX = getTransforms.x
-    state.layout.graph.transformY = getTransforms.y
-
+    // state.layout.graph.transformX = getTransforms.x
+    // state.layout.graph.transformY = getTransforms.y
+    zx.transform(_gx, getTransforms.x)
+    zy.transform(_gy, getTransforms.y)
     updateScales()
-    state.animatedGraph.graph.setZoom(state.layout.graph.transform)
+    state.animatedGraph.graph.setZoom()
     //  console.log(x, xRange)
   }
 

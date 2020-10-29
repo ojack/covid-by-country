@@ -209,7 +209,7 @@ setZoomParameters()
   //     outer.call(zoomY).call(zoomY.transform, layout.graph.transform.y)
   }
 
-  const setZoom = (transformX = d3.zoomIdentity, transformY = d3.zoomIdentity) => {
+  const setZoom = () => {
     // outer.call(zoomX).call(zoomX.transform, transformX)
     // outer.call(zoomY).call(zoomY.transform, transformY)
   //  outer.call(zoom).call(zoom.transform, layout.graph.transform.x)

@@ -114,7 +114,7 @@ module.exports = (state, emitter) => {
   })
 
   emitter.on('clearTooltip', (d) => {
-    state.tooltip = null
+  //  state.tooltip = null
     emitter.emit('render')
   })
 
@@ -126,6 +126,16 @@ module.exports = (state, emitter) => {
 
   let z = d3.zoomIdentity;
 
+  emitter.on('setSelected', (d) => {
+
+    const xExtent = d3.extent(d[state.plot.x.key]).map((val) => val * state.plot.x.scaleBy)
+    const yExtent = d3.extent(d[state.plot.y.key]).map((val) => val * state.plot.x.scaleBy)
+    console.log(xExtent, yExtent)
+      state.tooltip = d
+    updateExtent(xExtent, yExtent)
+    emitter.emit('render')
+  })
+
   emitter.on('update zoom on touch', (e) => {
     console.log(e)
     const t = e.transform;
@@ -133,38 +143,18 @@ module.exports = (state, emitter) => {
 
     let tx = state.layout.graph.transformX
     let ty = state.layout.graph.transformY
-
     //  const point = e.sourceEvent ? d3.pointer(e) : [width / 2, height / 2];
     const shift = e.sourceEvent && e.sourceEvent.shiftKey;
-
     const point = [ 0, state.layout.graph.height]
-    console.log(tx, (t.x - z.x))
     if (k === 1) {
-      // pure translation?
-      //  state.layout.graph.transformX =
       tx = tx.translate((t.x - z.x)/tx.k, 0)
       ty = ty.translate(0, (t.y - z.y) / ty.k)
-      // tx.translate((t.x - z.x) / tx.k, 0)
-      //  ty.translate(0, (t.y - z.y) / ty.k)
-      // doX && gx.call(zoomX.translateBy, (t.x - z.x) / tx().k, 0);
-      // doY && gy.call(zoomY.translateBy, 0, (t.y - z.y) / ty().k);
     } else {
       tx = tx.scale(shift ? 1/k : k)
-      //  ty = ty.scale(k)
       ty = ty.translate(0, - state.layout.graph.height*(k-1)).scale(k)
-      //(k)(t.y - z.y) / ty.k)
-      // if not, we're zooming on a fixed point
-      // doX && gx.call(zoomX.scaleBy, shift ? 1 / k : k, point);
-      // doY && gy.call(zoomY.scaleBy, k, point);
     }
-
-    // const scaleFromBottomLeft = (scaleAmount, height) => {
-    //   return d3.zoomIdentity.translate(0, -height*(scaleAmount - 1)).scale(scaleAmount)
-    // }
-    console.log(state.layout.graph.transformX)
     state.layout.graph.transformX = tx
     state.layout.graph.transformY = ty
-
     z = t
     updateScales()
     emitter.emit('render')
@@ -209,22 +199,28 @@ module.exports = (state, emitter) => {
       stopPlaying()
       // stop playing
     }
-    if(state.plotSettings.autoZoom.selected === true) updateExtent()
+    if(state.plotSettings.autoZoom.selected === true) {
+      const plot = state.plot
+      updateExtent(
+        plot.x.dailyExtent[state.dateIndex]*plot.x.scaleBy,
+        plot.y.dailyExtent[state.dateIndex]*plot.y.scaleBy
+      )
+    }
     emitter.emit('render')
   }
 
   const scaleToDomain = (x0, x1,y0, y1, width, height) => {
-    const yScale = height/(y0 - y1)
+    const yScale = height/(y0 - y1) - 0.1
     console.log(y0, y1, yScale, height)
 
-    const xScale = height/(x1 - x0)
+    const xScale = height/(x1 - x0) - 0.1
     console.log('x', x0, x1, xScale)
     // return d3.zoomIdentity
     //          .scale(width / (x1 - x0), 0.5)
     //          .translate(-x0, 0)
     return {
       x: d3.zoomIdentity.translate(0, 0).scale(xScale),
-      y: d3.zoomIdentity.translate(0, -height*(yScale - 1)).scale(yScale)
+      y: d3.zoomIdentity.translate(0, -y0*(yScale - 1)).scale(yScale)
     }
     // !! problem: zoom only has onw k value, to do: https://observablehq.com/@d3/x-y-zoom
     //  return d3.zoomIdentity.translate(0, -height*(yScale - 1)).scale(yScale, yScale)
@@ -234,19 +230,18 @@ module.exports = (state, emitter) => {
   //   return d3.zoomIdentity.translate(0, -height*(scaleAmount - 1)).scale(scaleAmount)
   // }
 
-  function updateExtent() {
-    console.log(state.plot)
-    const x = state.plot.x.dailyExtent[state.dateIndex]
-    const y = state.plot.y.dailyExtent[state.dateIndex]
+  function updateExtent(x, y) {
+  //  console.log(state.plot)
+
     //   const xRange = [state.plot.zx(x[0]), state.plot.zx(x[1])]
     // const xMin = state.plot.zx(x[0])
     // const xMax =  state.plot.zx(x[1])
     console.log(x, y, state.plot.x.scale()(x[1]), state.plot.y.scale()(y[1]) )
     const getTransforms  = scaleToDomain(
-      x[0],
-      state.plot.x.scale()(x[1]/10),
-      state.plot.y.scale()(y[0]/10),
-      state.plot.y.scale()(y[1]/10),
+      state.plot.x.scale()(x[0]),
+      state.plot.x.scale()(x[1]),
+      state.plot.y.scale()(y[0]),
+      state.plot.y.scale()(y[1]),
       state.layout.graph.width,
       state.layout.graph.height
     )

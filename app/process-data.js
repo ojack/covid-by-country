@@ -5,20 +5,20 @@ module.exports = (data) => {
   const countries = data.countries.filter((d) => d.population > 1000000).filter((d) => d.name !== "World")
       .sort((a, b) => d3.descending(a.population, b.population))
 
-  // change in 7-day incidence per day
-  countries.forEach((country, i) => {
-  //  d.color = d3.hsl(355*i/countries.length, 0.9, 0.3)
-    const dx = []
-    dx.push(0)
-    const newCases = country['7_day_incidence_per_million']
-    newCases.forEach((dailyNew, i) => {
-      if(i !== 0) {
-        const change = dailyNew - newCases[i-1]
-        dx.push(change)
-      }
-    })
-    country.dx = dx
-  })
+  // // change in 7-day incidence per day
+  // countries.forEach((country, i) => {
+  // //  d.color = d3.hsl(355*i/countries.length, 0.9, 0.3)
+  //   const dx = []
+  //   dx.push(0)
+  //   const newCases = country['7_day_incidence_per_million']
+  //   newCases.forEach((dailyNew, i) => {
+  //     if(i !== 0) {
+  //       const change = dailyNew - newCases[i-1]
+  //       dx.push(change)
+  //     }
+  //   })
+  //   country.dx = dx
+  // })
 
   // Percent change in the number of newly confirmed cases per million in past seven days, compared to seven days prior.
   // change in 7-day incidence per day
@@ -111,7 +111,7 @@ module.exports = (data) => {
   //  return dailyExtent
 //  })
 
-  let minRange = {'new_cases_smoothed_per_million': 10,    'total_cases_per_million': 6}
+//  let minRange = {'new_cases_smoothed_per_million': 10,    'total_cases_per_million': 6}
 
 //  const MAX_Y = 450
   // let dx = minRange['new_cases_smoothed_per_million']

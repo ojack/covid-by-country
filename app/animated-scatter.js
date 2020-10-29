@@ -103,6 +103,10 @@ module.exports = ({ layout, data, plot}, emit) => {
     d3.select(this).attr("stroke", "white")
     emit('setTooltip', d)
   })
+  .on('click', function(d, i, arr, el){
+    //console.log('clicked', d)
+    emit('setSelected', d)
+  })
   // .on('mouseout', function(d) {
   //   emit('clearTooltip')
   // })

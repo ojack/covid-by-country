@@ -16,6 +16,11 @@ module.exports = () => {
 
     let z = d3.zoomIdentity;
 
+    const updateExtent = function(xTransforms, yTransforms) {
+      zx.transform(_gx, xTransforms)
+      zy.transform(_gy, yTransforms)
+    }
+
     //
     const updateFromTouchEvent = (e) => {
       console.log(e.sourceEvent)
@@ -50,6 +55,7 @@ module.exports = () => {
     return {
       tx: _tx,
       ty: _ty,
-      updateFromTouchEvent: updateFromTouchEvent
+      updateFromTouchEvent: updateFromTouchEvent,
+      updateExtent: updateExtent
     }
 }

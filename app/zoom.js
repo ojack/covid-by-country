@@ -23,7 +23,7 @@ module.exports = () => {
 
     //
     const updateFromTouchEvent = (e) => {
-      console.log(e.sourceEvent)
+    //  console.log(e.sourceEvent)
       const t = e.transform;
       const k = t.k / z.k;
 

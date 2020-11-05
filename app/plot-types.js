@@ -59,13 +59,14 @@ module.exports = (state) => {
     'incidence': {
       label: '7-day incidence',
       x: 'total cases 100',
-      y: '7-day 100'
+      y: '7-day 100',
+      key: 'incidence'
     },
     'incidencechange': {
       label: 'change in incidence',
       x: '7-day 100',
       y: 'dx',
-      id: 'incidencechange'
+      key: 'incidencechange'
     },
     // {
     //   label: 'change in incidence (%)',

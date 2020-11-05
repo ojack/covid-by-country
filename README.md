@@ -22,3 +22,9 @@ npm run start
 ```
 npm run build
 ```
+
+
+Query parameters specify settings:
+```
+/?type=incidencechange&scale=log
+```

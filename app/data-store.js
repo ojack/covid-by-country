@@ -11,9 +11,10 @@ module.exports = (state, emitter) => {
   const plots = require('./plot-types.js')(state)
   state.plot = plots.currentPlot
 
+  const scaleTypes = ['linear', 'log']
   state.plotSettings = {
     scale: {
-      options: [{ label: 'linear'}, {label: 'log'}],
+      options: scaleTypes.map((label) => ({label: label, key: label})),
       selected: 0
     },
     type: {
@@ -34,6 +35,33 @@ module.exports = (state, emitter) => {
     }
   }
 
+  // when forward or back is used
+  emitter.on('navigate', () => {
+    loadFromParams()
+  })
+
+  function loadFromParams() {
+    console.log(state.query)
+    // populate initial state based on query params
+    Object.entries(state.query).forEach(([key, value]) => {
+      if(state.plotSettings[key]) {
+        if(key === 'type') {
+          const selectedIndex = Object.keys(plots.plotTypes).indexOf(value)
+          if(selectedIndex > -1) state.plotSettings[key].selected = selectedIndex
+        } else if (key === 'scale'){
+          const selectedIndex = scaleTypes.indexOf(value)
+          if(selectedIndex > -1) state.plotSettings[key].selected = selectedIndex
+        }
+        else {
+          const bool = String(value).toLowerCase() === "true" ? true : false
+          state.plotSettings[key].selected = bool
+        }
+      }
+    })
+
+    updatePlot()
+  }
+  loadFromParams()
 
   state.selected = null
 
@@ -41,9 +69,22 @@ module.exports = (state, emitter) => {
 
   emitter.on('update settings', (key, index) => {
     if(key) state.plotSettings[key].selected = index
+    setUrl()
     if(key === 'scale' || key === 'type') updatePlot()
     emitter.emit('render')
   })
+
+
+
+  // update url to reflect current parameters
+  function setUrl() {
+    const getValue = (value) => value.options ? value.options[value.selected].key : value.selected
+    const queryString = `${Object.entries(state.plotSettings).map(([key, value]) => `${key}=${getValue(value)}`).join('&')}`
+  //  var pageUrl = '?' + queryString;
+//  console.log('')
+  //  window.history.pushState('', '', `?${queryString}`)
+    emitter.emit('pushState', `?${queryString}`)
+  }
 
   emitter.on('togglePlay', () => {
     state.isPlaying = !state.isPlaying
@@ -72,26 +113,12 @@ module.exports = (state, emitter) => {
 
   let z = d3.zoomIdentity;
 
-
-
-
-
-
-
-  // function resize (_updateZoomTransform = true) {
-  //   console.log('resizing state')
-  //   const panel = state.layout.panel.isOpen ? state.layout.panel.width : false
-  //   state.layout.graph.width = window.innerWidth - panel - state.layout.graph.margin.left - state.layout.graph.margin.right
-  //   state.layout.graph.height = window.innerHeight - state.layout.graph.margin.top - state.layout.graph.margin.bottom
-  //   if(_updateZoomTransform) updateScales()
-  // }
-
   function updatePlot() {
     state.plot = plots.setPlot({
       log: state.plotSettings.scale.selected == 0 ? false: true,
       type: Object.keys(plots.plotTypes)[state.plotSettings.type.selected]
     })
-    state.animatedGraph.graph.resetZoom()
+    if(state.animatedGraph) state.animatedGraph.graph.resetZoom()
     emitter.emit('layout:updateScales')
   }
 
@@ -122,16 +149,5 @@ module.exports = (state, emitter) => {
     }
     emitter.emit('render')
   }
-
-  const scaleToDomain = (x0, x1,y0, y1, width, height) => {
-    const yScale = height/(y0 - y1) - 0.1
-    const xScale = height/(x1 - x0) - 0.1
-    return {
-      x: d3.zoomIdentity.translate(0, 0).scale(xScale),
-      y: d3.zoomIdentity.translate(0, -y0*(yScale - 1)).scale(yScale)
-    }
-  }
-
-
 
 }

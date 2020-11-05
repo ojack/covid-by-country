@@ -225,7 +225,7 @@ setZoomParameters()
     update: update,
     resize: resize,
     toggleLabels: toggleLabels,
-//    resetZoom: setZoom,
+    resetZoom: setZoom,
     setZoom: setZoom
   }
 }

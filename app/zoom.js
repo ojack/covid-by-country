@@ -2,8 +2,8 @@ const d3 = require('d3')
 
 module.exports = () => {
 
-    const zx = d3.zoom()
-    const zy = d3.zoom()
+    let zx = d3.zoom()
+    let zy = d3.zoom()
 
     // dummy elements to store zoom because current transform not stored in zoom but on element
     const _gx = d3.create("g")
@@ -16,6 +16,16 @@ module.exports = () => {
 
     let z = d3.zoomIdentity;
 
+    const reset = () => {
+      console.log('resetting zoom')
+      // zx = d3.zoom()
+      // zy = d3.zoom()
+  //    z = d3.zoomIdentity
+      _gx.call(zx.transform, d3.zoomIdentity)
+      _gy.call(zy.transform, d3.zoomIdentity)
+      console.log(zx, _tx())
+    }
+
     const updateExtent = function(xTransforms, yTransforms) {
       zx.transform(_gx, xTransforms)
       zy.transform(_gy, yTransforms)
@@ -23,7 +33,7 @@ module.exports = () => {
 
     //
     const updateFromTouchEvent = (e) => {
-    //  console.log(e.sourceEvent)
+      //console.log(e.sourceEvent)
       const t = e.transform;
       const k = t.k / z.k;
 
@@ -55,6 +65,7 @@ module.exports = () => {
     return {
       tx: _tx,
       ty: _ty,
+      reset: reset,
       updateFromTouchEvent: updateFromTouchEvent,
       updateExtent: updateExtent
     }

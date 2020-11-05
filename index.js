@@ -11,7 +11,7 @@ const Canvas = require('./app/canvas-renderer.js')
 const controls = require('./app/control-panel.js')
 
 const app = choo()
-app.use(devtools())
+//app.use(devtools())
 app.use(dataStore)
 app.use(layoutStore)
 app.route('/', mainView)

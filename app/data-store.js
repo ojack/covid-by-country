@@ -119,7 +119,7 @@ module.exports = (state, emitter) => {
       log: state.plotSettings.scale.selected == 0 ? false: true,
       type: Object.keys(plots.plotTypes)[state.plotSettings.type.selected]
     })
-    if(state.animatedGraph) state.animatedGraph.graph.resetZoom()
+  //  if(state.animatedGraph) state.animatedGraph.graph.resetZoom()
     emitter.emit('layout:updateScales')
   }
 

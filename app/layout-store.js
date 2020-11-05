@@ -21,6 +21,7 @@ module.exports = (state, emitter) => {
   })
 
   emitter.on('layout:updateScales', () => {
+    zoom.reset()
     updateScales()
   })
 

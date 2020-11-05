@@ -28,11 +28,12 @@ module.exports = (state, emitter) => {
     trajectories: {
       selected: true,
       label: 'show trajectories'
-    },
-    autoZoom: {
-      selected: false,
-      label: 'auto zoom'
     }
+    // ,
+    // autoZoom: {
+    //   selected: false,
+    //   label: 'auto zoom'
+    // }
   }
 
   // when forward or back is used
@@ -140,13 +141,13 @@ module.exports = (state, emitter) => {
       stopPlaying()
       // stop playing
     }
-    if(state.plotSettings.autoZoom.selected === true) {
-      const plot = state.plot
-      updateExtent(
-        plot.x.dailyExtent[state.dateIndex]*plot.x.scaleBy,
-        plot.y.dailyExtent[state.dateIndex]*plot.y.scaleBy
-      )
-    }
+    // if(state.plotSettings.autoZoom.selected === true) {
+    //   const plot = state.plot
+    //   updateExtent(
+    //     plot.x.dailyExtent[state.dateIndex]*plot.x.scaleBy,
+    //     plot.y.dailyExtent[state.dateIndex]*plot.y.scaleBy
+    //   )
+    // }
     emitter.emit('render')
   }
 

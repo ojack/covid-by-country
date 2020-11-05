@@ -201,13 +201,13 @@ module.exports = ({ layout, data, plot}, emit) => {
   //.call(zoom.transform, layout.graph.transform.x)
 setZoomParameters()
 
-  const resetZoom = () => {
-    setZoom()
-  //   //  console.log('setting transform', startingTransform)
-  // //    outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
-  //     outer.call(zoomX).call(zoomX.transform, layout.graph.transform.x)
-  //     outer.call(zoomY).call(zoomY.transform, layout.graph.transform.y)
-  }
+  // const resetZoom = () => {
+  //   setZoom()
+  // //   //  console.log('setting transform', startingTransform)
+  // // //    outer.call(zoom).call(zoom.transform, d3.zoomIdentity)
+  // //     outer.call(zoomX).call(zoomX.transform, layout.graph.transform.x)
+  // //     outer.call(zoomY).call(zoomY.transform, layout.graph.transform.y)
+  // }
 
   const setZoom = () => {
     // outer.call(zoomX).call(zoomX.transform, transformX)
@@ -225,7 +225,7 @@ setZoomParameters()
     update: update,
     resize: resize,
     toggleLabels: toggleLabels,
-    resetZoom: resetZoom,
+//    resetZoom: setZoom,
     setZoom: setZoom
   }
 }

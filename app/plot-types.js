@@ -50,28 +50,29 @@ module.exports = (state) => {
     obj.extent = state.data.extent[obj.key]
   })
 
-  const plotTypes = [
-    {
-      label: 'new cases over time',
-      x: 'time',
-      y: '7-day 100'
-    },
-    {
+  const plotTypes = {
+    // {
+    //   label: 'new cases over time',
+    //   x: 'time',
+    //   y: '7-day 100'
+    // },
+    'incidence': {
       label: '7-day incidence',
       x: 'total cases 100',
-      y: '7-day 100',
+      y: '7-day 100'
     },
-    {
+    'incidencechange': {
       label: 'change in incidence',
       x: '7-day 100',
-      y: 'dx'
+      y: 'dx',
+      id: 'incidencechange'
     },
-    {
-      label: 'change in incidence (%)',
-      x: '7-day 100',
-      y: 'percent change'
-    }
-  ]
+    // {
+    //   label: 'change in incidence (%)',
+    //   x: '7-day 100',
+    //   y: 'percent change'
+    // }
+  }
 
   const getAxis = ({ log = false, data, range}) => {
     let scale = () => d3.scaleLinear([data.extent[0]*data.scaleBy, data.extent[1]*data.scaleBy], range())
@@ -100,7 +101,7 @@ module.exports = (state) => {
     return plot
   }
 
-  setPlot({ type: 1, log: false })
+  setPlot({ type: 'incidence', log: false })
 
   return {
     plotTypes: plotTypes,

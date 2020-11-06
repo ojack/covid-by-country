@@ -7,7 +7,10 @@ module.exports = (state, emitter) => {
   state.dateIndex = 100
   state.updateInterval = 200
   state.isPlaying = true
-  state.tooltip = null
+  state.tooltip = {
+    content: null,
+    point: [0, 0]
+  }
   const plots = require('./plot-types.js')(state)
   state.plot = plots.currentPlot
 
@@ -102,8 +105,8 @@ module.exports = (state, emitter) => {
     emitter.emit('render')
   })
 
-  emitter.on('setTooltip', (d) => {
-    state.tooltip = d
+  emitter.on('setTooltip', (d, point) => {
+    state.tooltip.content = Object.assign({}, d)
     emitter.emit('render')
   })
 

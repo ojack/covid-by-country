@@ -6,7 +6,7 @@ module.exports = class CanvasRenderer extends Component {
     super(id)
     this.plot = state.plot
     this.data = state.data
-    this.tooltip = state.tooltip
+    this.tooltip = Object.assign({}, state.tooltip)
     this.plotSettings = state.plotSettings
     state.canvas = this
   //  this.dimensions = state.layout.graph
@@ -21,7 +21,7 @@ module.exports = class CanvasRenderer extends Component {
   }
 
   drawPlot(draw = true) {
-    console.log('drawing', draw)
+  //  console.log('drawing', draw)
     this.ctx.strokeStyle = `rgba(200, 200, 200, 0.4)`
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     this.ctx.globalCompositeOperation = 'lighter'
@@ -41,14 +41,14 @@ module.exports = class CanvasRenderer extends Component {
       })
     })
   }
-    if(this.tooltip !== null) {
+    if(this.tooltip.content !== null) {
         this.ctx.strokeStyle = `rgba(255, 255, 255, 1)`
         this.ctx.globalAlpha = 1
       //  console.log('tooltip', this.tooltip)
         plotTrajectory({
           plot: this.plot,
           ctx: this.ctx,
-          d: this.tooltip,
+          d: this.tooltip.content,
           dateArray: this.data.dates
           // y: this.tooltip[this.plot.yKey],
           // x: this.tooltip[this.plot.xKey]
@@ -56,34 +56,35 @@ module.exports = class CanvasRenderer extends Component {
     }
   }
 
-  update({ dimensions, tooltip, plot, plotSettings}) {
-//    this.plot = plot
+  update(state) {
+//  if(state.graph) {
+  const dimensions = state.layout.graph
+  const { dateIndex, plot, tooltip, plotSettings } = state
 
-//  console.log(dimensions.transform.x)
     if(dimensions.width !== this.dimensions.width ||
       dimensions.height !== this.dimensions.height ||
       this.tooltip !== tooltip || this.plot !== plot
       || this.plotSettings.trajectories.selected !== plotSettings.trajectories.selected
   ) {
-      console.log('resizing canvas')
+    //  console.log('resizing canvas')
       this.canvas.width = dimensions.width
       this.canvas.height = dimensions.height
       this.dimensions = Object.assign({}, dimensions)
-      this.plot = plot
-      this.tooltip = tooltip
-      this.plotSettings = plotSettings
+      this.plot = Object.assign({}, plot)
+      this.tooltip = Object.assign({}, tooltip)
+      this.plotSettings = Object.assign({}, plotSettings)
       this.drawPlot(plotSettings.trajectories.selected)
-
     }
+//  }
     return false
   }
 
-  createElement({dimensions, tooltip}) {
-    this.dimensions = Object.assign({}, dimensions)
-    this.tooltip = tooltip
+  createElement({layout, tooltip}) {
+    this.dimensions = Object.assign({}, layout.graph)
+    this.tooltip =  Object.assign({}, tooltip)
     const canvas = html`<canvas></canvas`
-    canvas.width = dimensions.width
-    canvas.height = dimensions.height
+    canvas.width = this.dimensions.width
+    canvas.height = this.dimensions.height
     this.canvas = canvas
     return canvas
   }

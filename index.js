@@ -11,7 +11,7 @@ const Canvas = require('./app/canvas-renderer.js')
 const controls = require('./app/control-panel.js')
 
 const app = choo()
-//app.use(devtools())
+app.use(devtools())
 app.use(dataStore)
 app.use(layoutStore)
 app.route('/', mainView)
@@ -42,8 +42,7 @@ function mainView (state, emit) {
       <div class="flex-auto relative">
 
         <div class="relative" style="width:${width}px;height:${height}px">
-          ${graphContainer(state.cache(Canvas, 'canvas-base').render({
-          dimensions: graph, dateIndex: state.dateIndex, plot: state.plot, tooltip: state.tooltip, plotSettings: state.plotSettings }))}
+          ${graphContainer(state.cache(Canvas, 'canvas-base').render(state))}
           ${graphContainer(state.cache(Scatterplot, 'scatterplot').render({
             dimensions: graph, dateIndex: state.dateIndex, plot: state.plot, plotSettings: state.plotSettings }))}
             <i class="fas fa-cogs dim absolute top-0 right-0 pointer pa2" title="show settings" onclick=${()=>emit('togglePanel')}></i>

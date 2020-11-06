@@ -105,8 +105,10 @@ module.exports = (state, emitter) => {
     emitter.emit('render')
   })
 
-  emitter.on('setTooltip', (d, point) => {
+  emitter.on('setTooltip', (d, e) => {
+  //  console.log(point)
     state.tooltip.content = Object.assign({}, d)
+    state.tooltip.point = [e.pageX, e.pageY]
     emitter.emit('render')
   })
 

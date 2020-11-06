@@ -3,8 +3,11 @@ const html = require('choo/html')
 module.exports = (state, emit) => {
   if(state.tooltip.content!==null) {
     const t = state.tooltip.content
+    const point = state.tooltip.point
+    const yOff = point[1] > 300 ? point[1] - 200 : point[1] + 100
+    const xOff = point[0] - 80
     const {x, y} = state.plot
-    return html`<div class="absolute pa2 ba f6 w5" style="top:40px;left:420px">
+    return html`<div class="absolute pa2 f6 w5" style="top:${yOff}px;left:${point[0]}px;background:rgba(100, 100, 100, 0.9)">
       <div class="flex justify-between"><span>${t.name} </span><span class="f7">${state.data.dates[state.dateIndex]}</span></div>
       <div>${Math.round(y.value(t, state.dateIndex)*10)/10} ${y.label}</div>
       <div>${Math.round(x.value(t, state.dateIndex)*10)/10} ${x.label}</div>

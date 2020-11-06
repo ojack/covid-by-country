@@ -35,7 +35,7 @@ module.exports = (state, emitter) => {
     const xExtent = d3.extent(d[state.plot.x.key]).map((val) => val * state.plot.x.scaleBy)
     const yExtent = d3.extent(d[state.plot.y.key]).map((val) => val * state.plot.x.scaleBy)
     console.log(xExtent, yExtent)
-    state.tooltip = d
+    state.tooltip.content = d
     updateExtent(xExtent, yExtent)
     emitter.emit('render')
   })

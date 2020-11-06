@@ -101,7 +101,7 @@ module.exports = ({ layout, data, plot}, emit) => {
   .on('mouseover', function(d, i, arr, el) {
     d3.selectAll(".circle").attr("stroke", d => color(d.continent))
     d3.select(this).attr("stroke", "white")
-    emit('setTooltip', d)
+    emit('setTooltip', d, d3.event)
   })
   .on('click', function(d, i, arr, el){
     //console.log('clicked', d)

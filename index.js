@@ -51,7 +51,7 @@ function mainView (state, emit) {
           <div class="absolute bottom-0 w-100 pa4 ml2" style="height:${graph.margin.bottom}px">
             <div class=" pt4 flex items-center">
               <div class="mr2 tc w3 pointer ba dim pa2" onclick=${() => emit('togglePlay')}>${state.isPlaying ? 'Pause': 'Play'}</div>
-              <input class="flex-auto" oninput=${(e)=>emit('setDate', parseFloat(e.target.value))} type="range" id="date" name="date" min="0" max=${state.data.dates.length-2} value=${state.dateIndex}>
+              <input class="flex-auto" oninput=${(e)=>emit('setDate', parseFloat(e.target.value))} type="range" id="date" name="date" min="0" max=${state.data.dates.length-1} value=${state.dateIndex}>
               <div class="mr2 pa2">${state.data.dates[state.dateIndex]}</div>
             </div>
             <div class="f4 mv2 pt3"> COVID-19 cases by country</div>

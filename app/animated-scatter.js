@@ -34,16 +34,23 @@ module.exports = ({ layout, data, plot}, emit) => {
   .style('width', width)
   .style('height', height)
   .style('overflow', 'visible')
+  .on('mouseleave', function(e) {
+  //  e.preventDefault()
+    console.log('leave')
+    d3.selectAll(".circle").attr("stroke", d => color(d.continent))
+    emit('clearTooltip')
+  })
 
   // create elements
   const svg = outer.append("svg")
   .attr("viewBox", [0, 0, width, height])
   .style('width', width)
   .style('height', height)
-  .on('mouseleave', function() {
-    d3.selectAll(".circle").attr("stroke", d => color(d.continent))
-    emit('clearTooltip')
-  })
+  // .on('mouseleave', function(e) {
+  // //  e.preventDefault()
+  // //  d3.selectAll(".circle").attr("stroke", d => color(d.continent))
+  //   emit('clearTooltip')
+  // })
 
   const gx = outer.append("g");
   const gy = outer.append("g");

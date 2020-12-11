@@ -113,7 +113,7 @@ module.exports = (state, emitter) => {
   })
 
   emitter.on('clearTooltip', (d) => {
-  //  state.tooltip = null
+    state.tooltip.content = null
     emitter.emit('render')
   })
 

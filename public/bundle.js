@@ -1265,6 +1265,7 @@ app.use(devtools())
 app.use(dataStore)
 app.use(layoutStore)
 app.route('/', mainView)
+app.route('/ojack/covid-by-country/public', mainView)
 app.mount('body')
 
 

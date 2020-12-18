@@ -8,7 +8,7 @@
     "start": "http-server ./public",
     "dev": "budo index.js:bundle.js --open --live --dir public",
     "build": "browserify index.js -o public/bundle.js",
-    "update-data": "node ./data-processing/fetch-latest.js && node ./data-processing/process-data.js"
+    "update-data": "node ./data-processing/fetch-latest.js && node ./data-processing/process-data.js && npm run build"
   },
   "author": "",
   "license": "ISC",

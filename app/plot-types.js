@@ -6,7 +6,7 @@ const x = (dateIndex) => d3.scaleLog([1, 45000], [0, state.layout.graph.width]).
 const y = (dateIndex) => d3.scaleLog([0.1, Math.max(1000, state.data.max['new_cases_smoothed_per_million'])], [state.layout.graph.height,0]).clamp(true)
 
 module.exports = (state) => {
-  const color = d3.scaleOrdinal(state.data.countries.map(d => d.continent), d3.schemeSet1).unknown("black")
+  const color = d3.scaleOrdinal(state.data.countries.map(d => d.continent), d3.schemeCategory10).unknown("black")
 
   // functions rather than fixed so that will update as graph is updated
   const xRange = () => [0, state.layout.graph.width]

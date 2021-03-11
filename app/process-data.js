@@ -2,7 +2,7 @@ const d3 = require('d3')
 
 module.exports = (data) => {
   // filter data by countries with population over 10000
-  const countries = data.countries.filter((d) => d.population > 1000000).filter((d) => d.name !== "World")
+  const countries = data.countries.filter((d) => d.population > 1000000).filter((d) => d.name !== "World" && d.continent.length > 0)
       .sort((a, b) => d3.descending(a.population, b.population))
 
   // // change in 7-day incidence per day
